@@ -138,7 +138,7 @@ public class AutoLDEsTryCombo {
             }
             if (k + 1 < gCnt) i = idx[k + 1];
         }
-        return 0;
+        return gapMin + idx[0];
     }
 
     protected static void cureLongSeq() {
@@ -305,7 +305,7 @@ public class AutoLDEsTryCombo {
     public static void main(String[] args) {
         boolean cured = false;
         for (double v = 2.0; v <= 2.5; v = round(0.01 + v, 3)) {
-            for (double t = 2.0; t <= 2.5; t = round(0.01 + t, 3)) {
+            for (double t = 2.01; t <= 2.5; t = round(0.01 + t, 3)) {
                 for (int r = 0; r <= 100; r++) {
                     minMult = round(v - 0.01, 3);
                     maxMult = round(v + 0.01, 3);
