@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 public class AutoLDEsTryCombo {
 
@@ -138,7 +139,7 @@ public class AutoLDEsTryCombo {
             }
             if (k + 1 < gCnt) i = idx[k + 1];
         }
-        return gapMin + idx[0];
+        return 0;
     }
 
     protected static void cureLongSeq() {
@@ -304,56 +305,66 @@ public class AutoLDEsTryCombo {
 
     public static void main(String[] args) {
         boolean cured = false;
-        for (double v = 2.0; v <= 2.5; v = round(0.01 + v, 3)) {
-            for (double t = 2.01; t <= 2.5; t = round(0.01 + t, 3)) {
-                for (int r = 0; r <= 100; r++) {
-                    minMult = round(v - 0.01, 3);
-                    maxMult = round(v + 0.01, 3);
-                    decreaseTarget = t;
-                    decreasePercent = r;
-                    aSeq.clear();
+        Scanner input = new Scanner(System.in);
+        double v = 2.0;
+        try {
+            while (true) {
+                System.out.println("Please input valid multiplier.");
+                String m = input.nextLine();
+                v = round(Double.valueOf(m), 3);
+                if (v >= 2.0 && v <= 2.5) break;
+                else System.out.println("Invalid multiplier.");
+            }
+        } catch (Exception e) {e.printStackTrace();}
+        input.close();
+        for (double t = 2.0; t <= 2.5; t = round(0.01 + t, 3)) {
+            for (int r = 0; r <= 100; r++) {
+                minMult = round(v - 0.01, 3);
+                maxMult = round(v + 0.01, 3);
+                decreaseTarget = t;
+                decreasePercent = r;
+                aSeq.clear();
+                bSeq.clear();
+                for (int i = 0; i < intialGaps.length; i++) aSeq.add(intialGaps[i]);
+                for (int i = 0; i < aSeq.size(); i++) bSeq.add(aSeq.get(i));
+                String extendString = findExtend();
+                if (!cured) cureLongSeq();
+                else {
                     bSeq.clear();
-                    for (int i = 0; i < intialGaps.length; i++) aSeq.add(intialGaps[i]);
-                    for (int i = 0; i < aSeq.size(); i++) bSeq.add(aSeq.get(i));
-                    String extendString = findExtend();
-                    if (!cured) cureLongSeq();
-                    else {
-                        bSeq.clear();
-                        for (int i = 0; i < cSeq.size(); i++) bSeq.add(cSeq.get(i));
-                        printSeqOut(aSeq);
-                        printSeqOut(bSeq);
-                    }
-                    cured = true;
-                    double initMin = minMult;
-                    double initMax = maxMult;
-                    //System.err.println("|SEQUENCE NAME: AUTOLDE_" + extendString + initMin + "-" + initMax + (decreaseMults ? ("_DEC-" + decreasePercent + "%-" + decreaseTarget) : "") + (testVal != 5 ? "_ALTV-" + testVal : "") + (coprimeForce ? "_CP|" : "|"));
-                    while ((long) (bSeq.get(0)) < (long) testCases[testCases.length - 1][0]) {
-                        appendBest();
-                        if (decreaseMults) decrease();
-                    }
-                    System.err.println("\nCOMPLETE:");
-                    String name = "|SEQUENCE NAME: AUTOLDE_" + extendString + initMin + "-" + initMax + (decreaseMults ? ("_DEC-" + decreasePercent + "%-" + decreaseTarget) : "") + (testVal != 5 ? "_ALTV-" + testVal : "") + (coprimeForce ? "_CP|" : "|");
-                    System.err.print("/");
-                    for (int i = 1; i < name.length() - 1; i++) System.err.print("-");
-                    System.err.print("\\\n" + name + "\n\\");
-                    for (int i = 1; i < name.length() - 1; i++) System.err.print("-");
-                    System.err.println("/");
+                    for (int i = 0; i < cSeq.size(); i++) bSeq.add(cSeq.get(i));
                     printSeqOut(aSeq);
-                    int wintimes = leaderboarding(v, t, r);
-                    try {
-                        Path path = FileSystems.getDefault().getPath("ALDE/ALDE-trials-" + v + ".txt");
-                        File output = new File("ALDE/ALDE-trials-" + v + ".txt");
-                        if (!output.createNewFile()) {
-                            //output.delete();
-                            //output.createNewFile();
-                        }
-                        String currentOutput = Files.readString(path);
-                        PrintWriter getWrite = new PrintWriter(output, "UTF-8");
-                        getWrite.append(currentOutput + "" + v + "-" + t + "-" + r + ": " + printSeq(aSeq) + ": WINS " + wintimes + " TIMES OF " + testCases.length + "\n");
-                        getWrite.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    printSeqOut(bSeq);
+                }
+                cured = true;
+                double initMin = minMult;
+                double initMax = maxMult;
+                //System.err.println("|SEQUENCE NAME: AUTOLDE_" + extendString + initMin + "-" + initMax + (decreaseMults ? ("_DEC-" + decreasePercent + "%-" + decreaseTarget) : "") + (testVal != 5 ? "_ALTV-" + testVal : "") + (coprimeForce ? "_CP|" : "|"));
+                while ((long) (bSeq.get(0)) < (long) testCases[testCases.length - 1][0]) {
+                    appendBest();
+                    if (decreaseMults) decrease();
+                }
+                System.err.println("\nCOMPLETE:");
+                String name = "|SEQUENCE NAME: AUTOLDE_" + extendString + initMin + "-" + initMax + (decreaseMults ? ("_DEC-" + decreasePercent + "%-" + decreaseTarget) : "") + (testVal != 5 ? "_ALTV-" + testVal : "") + (coprimeForce ? "_CP|" : "|");
+                System.err.print("/");
+                for (int i = 1; i < name.length() - 1; i++) System.err.print("-");
+                System.err.print("\\\n" + name + "\n\\");
+                for (int i = 1; i < name.length() - 1; i++) System.err.print("-");
+                System.err.println("/");
+                printSeqOut(aSeq);
+                int wintimes = leaderboarding(v, t, r);
+                try {
+                    Path path = FileSystems.getDefault().getPath("ALDE/ALDE-trials-" + v + ".txt");
+                    File output = new File("ALDE/ALDE-trials-" + v + ".txt");
+                    if (!output.createNewFile()) {
+                        //output.delete();
+                        //output.createNewFile();
                     }
+                    String currentOutput = Files.readString(path);
+                    PrintWriter getWrite = new PrintWriter(output, "UTF-8");
+                    getWrite.append(currentOutput + "" + v + "-" + t + "-" + r + ": " + printSeq(aSeq) + ": WINS " + wintimes + " TIMES OF " + testCases.length + "\n");
+                    getWrite.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
