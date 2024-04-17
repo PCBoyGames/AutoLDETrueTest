@@ -139,7 +139,7 @@ public class AutoLDEsTryCombo {
             }
             if (k + 1 < gCnt) i = idx[k + 1];
         }
-        return 0;
+        return gapMin + idx[0];
     }
 
     protected static void cureLongSeq() {
